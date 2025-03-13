@@ -1,24 +1,14 @@
-import "./index.css";
-import logo from "./images/logo.png";
-import line from "./images/header_line.png";
-import profile from "./images/profile.jpg";
-import edit from "./images/edit_avatar.svg";
+import "../index.css";
+import Header from "./Header/Header.jsx";
+import Main from "./Main/Main.jsx";
+import Footer from "./Footer/Footer.jsx";
+import profile from "../images/profile.jpg";
+import edit from "../images/edit_avatar.svg";
 
 function App() {
   return (
     <div className="page">
-      <header className="header">
-        <img
-          className=" logo header__logo"
-          src={logo}
-          alt="Logo de Around The U.S."
-        />
-        <img
-          className="line header__line"
-          src={line}
-          alt="Línea blanca separadora"
-        />
-      </header>
+      <Header />
 
       <section className="profile">
         <div className="profile__avatar-section">
@@ -45,13 +35,8 @@ function App() {
         ></button>
       </section>
 
-      <main className="elements">
-        <div className="elements__container" id="elements-container"></div>
-      </main>
-
-      <footer className="footer">
-        <p className="footer__text">2025 Around The U.S.</p>
-      </footer>
+      <Main />
+      <Footer />
     </div>
   );
 }
