@@ -1,4 +1,3 @@
-import React from "react";
 import logo from "../../images/logo.png";
 import line from "../../images/header_line.png";
 

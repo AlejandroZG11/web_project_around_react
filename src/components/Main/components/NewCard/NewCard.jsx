@@ -1,33 +1,34 @@
-export default function NewCard() {
+const NewCard = () => {
   return (
-    <form class="form popup__form" id="cards-form" novalidate>
-      <fieldset class="popup__form">
-        <button class="popup__close-button" type="button"></button>
-        <h2 class="popup__title">Nuevo lugar</h2>
+    <form className="form popup__form" id="cards-form" noValidate>
+      <fieldset className="popup__form">
+        <h2 className="popup__title">Nuevo lugar</h2>
         <input
-          class="popup__input"
+          className="popup__input"
           type="text"
           name="title"
           id="title"
           placeholder="Título"
-          minlength="2"
-          maxlength="30"
+          minLength="2"
+          maxLength="30"
           required
         />
-        <span class="input-error" id="title-error"></span>
+        <span className="input-error" id="title-error"></span>
         <input
-          class="popup__input"
+          className="popup__input"
           type="url"
           name="link"
           id="image-url"
           placeholder="Enlace a la imagen"
           required
         />
-        <span class="input-error" id="image-url-error"></span>
-        <button class="form__submit" type="submit">
+        <span className="input-error" id="image-url-error"></span>
+        <button className="form__submit" type="submit">
           Crear
         </button>
       </fieldset>
     </form>
   );
-}
+};
+
+export default NewCard;

@@ -1,16 +1,24 @@
-.elements__container {
-  max-width: 880px;
+.page__section {
   width: 100%;
-  height: 100%;
-  padding-top: 50px;
+  max-width: 880px;
+  box-sizing: border-box;
+  position: relative;
   margin: 0 auto;
+  padding-top: 50px;
+}
+
+.cards__list {
+  justify-content: center;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-column-gap: 17px;
-  grid-row-gap: 20px;
+  grid-gap: 20px 17px;
+  list-style-type: none;
+  margin: 0;
+  padding-left: 0px;
 }
 
 .element {
+  flex-direction: column;
   background-color: #ffffff;
   color: #000000;
   height: 361px;
@@ -84,7 +92,7 @@
 }
 
 .element__heart-button_active {
-  background: url("../images/heart_active.png") no-repeat center;
+  background: transparent url("../images/heart_active.png") no-repeat;
   background-position: center;
   background-size: contain;
   border: none;
@@ -94,7 +102,7 @@
 }
 
 @media screen and (max-width: 900px) {
-  .elements__container {
+  .cards__list {
     grid-template-columns: repeat(2, 282px);
     padding-top: 36px;
     width: 100%;
@@ -117,7 +125,7 @@
 }
 
 @media screen and (max-width: 600px) {
-  .elements__container {
+  .cards__list {
     grid-template-columns: repeat(1, 282px);
     padding-top: 36px;
     width: 100%;
@@ -140,7 +148,7 @@
 }
 
 @media screen and (max-width: 320px) {
-  .elements__container {
+  .cards__list {
     grid-template-columns: repeat(1, 282px);
     padding-top: 36px;
     width: 100%;

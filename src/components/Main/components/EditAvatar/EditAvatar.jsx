@@ -1,22 +1,23 @@
-export default function NewCard() {
+const EditAvatar = () => {
   return (
-    <form class="form popup__form" id="avatar-form" novalidate>
-      <fieldset class="popup__form">
-        <button class="popup__close-button" type="button"></button>
-        <h2 class="popup__title">Cambiar foto de perfil</h2>
+    <form className="form popup__form" id="avatar-form" noValidate>
+      <fieldset className="popup__form">
+        <h2 className="popup__title">Cambiar foto de perfil</h2>
         <input
-          class="popup__input"
+          className="popup__input"
           type="url"
           name="avatar"
           id="profilepic-input"
           placeholder="URL de la imagen"
           required
         />
-        <span class="input-error" id="profilepic-input-error"></span>
-        <button class="form__submit" type="submit">
+        <span className="input-error" id="profilepic-input-error"></span>
+        <button className="form__submit" type="submit">
           Guardar
         </button>
       </fieldset>
     </form>
   );
-}
+};
+
+export default EditAvatar;
