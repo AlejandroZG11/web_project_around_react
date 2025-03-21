@@ -1,4 +1,4 @@
-const CardImage = (props) => {
+const ImagePopup = (props) => {
   const { title, link } = props;
   return (
     <>
@@ -8,4 +8,4 @@ const CardImage = (props) => {
   );
 };
 
-export default CardImage;
+export default ImagePopup;

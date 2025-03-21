@@ -3,10 +3,8 @@ export default function Popup(props) {
 
   return (
     <div className="popup">
-      <div className="popup__overlay"></div>
-      <div className={`popup__content ${!title ? 'popup__photo-link' : ''}`}>
+      <div className={`popup__content ${!title ? 'popup__photo-content' : ''}`}>
         <button className="popup__close-button" onClick={onClose}></button>
-
         {children}
       </div>
     </div>

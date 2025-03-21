@@ -19,13 +19,8 @@
   align-items: center;
 }
 
-.popup__overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-  opacity: 0.7;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9;
+.popup__content {
+  position: relative;
 }
 
 .popup__form {
@@ -43,11 +38,11 @@
 }
 
 .popup__close-button {
+  position: absolute;
   width: 40px;
   height: 40px;
-  position: relative;
   top: -40px;
-  right: -400px;
+  right: -40px;
   cursor: pointer;
   z-index: 1000; /* Asegurar que esté por encima */
   background-image: url("../images/container__close-icon.svg");
@@ -69,8 +64,8 @@
 }
 
 .popup__photo-link {
-  max-width: 90vw;
-  max-height: 80vh;
+  max-width: 75vw;
+  max-height: 75vh;
   object-fit: cover;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);

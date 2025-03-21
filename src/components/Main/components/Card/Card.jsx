@@ -1,12 +1,12 @@
-import CardImage from '../CardImage/CardImage';
+import ImagePopup from '../ImagePopup/ImagePopup';
 
 const Card = (props) => {
-  const { card, onClick = () => {} } = props; // Previene el error si no se pasa onClick
+  const { card, onClick } = props;
   const { title, link, isLiked } = card;
 
   const popupImage = {
     title: '',
-    children: <CardImage title={title} link={link} />,
+    children: <ImagePopup title={title} link={link} />,
   };
 
   return (
@@ -15,7 +15,7 @@ const Card = (props) => {
       <img
         className="element__photo-link"
         src={link}
-        alt={title}
+        alt=""
         onClick={() => onClick(popupImage)} // Llama a la función solo si existe
       />
       <div className="element__photo-info">

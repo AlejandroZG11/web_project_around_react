@@ -1,23 +1,23 @@
-import profile from '../../images/profile.jpg';
-import edit from '../../images/edit_avatar.svg';
-import Card from './components/Card/Card.jsx';
+import profile from "../../images/profile.jpg";
+import edit from "../../images/edit_avatar.svg";
+import Card from "./components/Card/Card.jsx";
 
 const cards = [
   {
     isLiked: true,
-    _id: '5d1f0611d321eb4bdcd707dd',
-    title: 'Yosemite Valley',
-    link: 'https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg',
-    owner: '5d1f0611d321eb4bdcd707dd',
-    createdAt: '2019-07-05T08:10:57.741Z',
+    _id: "5d1f0611d321eb4bdcd707dd",
+    title: "Yosemite Valley",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
+    owner: "5d1f0611d321eb4bdcd707dd",
+    createdAt: "2019-07-05T08:10:57.741Z",
   },
   {
     isLiked: false,
-    _id: '5d1f064ed321eb4bdcd707de',
-    title: 'Lake Louise',
-    link: 'https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg',
-    owner: '5d1f0611d321eb4bdcd707dd',
-    createdAt: '2019-07-05T08:11:58.324Z',
+    _id: "5d1f064ed321eb4bdcd707de",
+    title: "Lake Louise",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg",
+    owner: "5d1f0611d321eb4bdcd707dd",
+    createdAt: "2019-07-05T08:11:58.324Z",
   },
 ];
 
@@ -28,7 +28,7 @@ const Main = (props) => {
     onClickEditProfile,
     onClickEditAvatar,
     onClickCreateCard,
-    onClickCard = () => {}, // Asegura que siempre sea una función
+    onClickCard,
   } = props;
 
   return (

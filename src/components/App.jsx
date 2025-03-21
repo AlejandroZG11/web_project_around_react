@@ -42,7 +42,7 @@ function App() {
           console.log("📍 Abriendo Nuevo Lugar");
           setPopup({ title: "Nuevo Lugar", children: <NewCard /> });
         }}
-        OnClickCard={(popupImage) => setPopup(popupImage)}
+        onClickCard={(popupImage) => setPopup(popupImage)}
       />
       <Footer />
       {popup && (
