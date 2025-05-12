@@ -1,10 +1,11 @@
-const ImagePopup = (props) => {
-  const { title, link } = props;
+import React from "react";
+
+const ImagePopup = ({ title, link, alt }) => {
   return (
-    <>
-      <img src={link} alt="" className="popup__photo-link" />
-      <p className="popup__photo-name">{title}</p>
-    </>
+    <div className="popup__image-container">
+      <img className="popup__image" src={link} alt={alt} />
+      <p className="popup__image-caption">{title}</p>
+    </div>
   );
 };
 
