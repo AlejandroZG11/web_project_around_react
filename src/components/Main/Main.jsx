@@ -10,6 +10,7 @@ const Main = (props) => {
   const { currentUser } = useContext(CurrentUserContext);
 
   const handleEditAvatarClick = () => {
+    console.log("Haciendo clic en editar avatar");
     onOpenPopup({ type: "editAvatar" });
   };
 
@@ -72,10 +73,10 @@ const Main = (props) => {
                 <Card
                   key={card._id}
                   card={card}
-                  onCardClick={() => onCardClick(card)}
+                  onCardClick={onCardClick}
                   onCardLike={onCardLike}
                   onCardDelete={onCardDelete}
-                  isLiked={!!isLiked}
+                  isLiked={isLiked} // Corregido: pasar el valor booleano directamente
                   currentUser={currentUser}
                 />
               );

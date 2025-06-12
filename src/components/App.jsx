@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header/Header.jsx";
 import Main from "./Main/Main.jsx";
 import Footer from "./Footer/Footer.jsx";
@@ -25,7 +25,6 @@ function App() {
 
       try {
         const initialCardsData = await api.getCardList();
-        console.log("Datos de las tarjetas desde la API:", initialCardsData); // AGREGAR ESTO
         if (Array.isArray(initialCardsData)) {
           setCards(initialCardsData);
         } else {
@@ -60,7 +59,9 @@ function App() {
       const updatedUser = await api.editAvatar(newAvatarData);
       setCurrentUser(updatedUser);
       setPopup(null);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error al actualizar el avatar:", error);
+    }
   };
 
   const handleAddPlaceSubmit = async (newCardData) => {
@@ -75,17 +76,25 @@ function App() {
 
   const handleCardLike = async (card) => {
     try {
-      const isLikedByCurrentUser = card.likes(
-        (like) => like._id === currentUser._id
-      );
+      // Aseguramos que card.likes sea siempre un array
+      const likesArray = card.likes || [];
+      console.log("handleCardLike - likesArray:", likesArray);
+
+      const isLikedByCurrentUser = currentUser?._id
+        ? likesArray.some((like) => like._id === currentUser._id)
+        : false;
+
       const updatedCard = await api.changeLikeCardStatus(
         card._id,
         !isLikedByCurrentUser
       );
+
       setCards((prevCards) =>
-        prevCards.map((currentCard) =>
-          currentCard._id === card._id ? updatedCard : currentCard
-        )
+        prevCards.map((currentCard) => {
+          const newCard =
+            currentCard._id === card._id ? updatedCard : currentCard;
+          return newCard;
+        })
       );
     } catch (error) {
       console.error("Error al dar/quitar like:", error);
@@ -104,6 +113,7 @@ function App() {
   };
 
   const handleOpenPopup = (content) => {
+    console.log("Abriendo popup con:", content);
     setPopup(content);
   };
 
@@ -118,7 +128,7 @@ function App() {
           currentUser,
           handleUpdateUser,
           handleUpdateAvatar,
-          handleAddPlaceSubmit,
+          handleAddPlaceSubmit, // ¡Asegúrate de que esto está aquí!
         }}
       >
         <Header />
@@ -138,14 +148,6 @@ function App() {
         <Footer />
         {popup && (
           <Popup title={popup.title} onClose={handleClosePopup}>
-            {React.isValidElement(popup.children)
-              ? React.cloneElement(popup.children, {
-                  onClose: handleClosePopup,
-                  onUpdateUser: handleUpdateUser,
-                  onUpdateAvatar: handleUpdateAvatar,
-                  onAddPlace: handleAddPlaceSubmit,
-                })
-              : popup.children}
             {popup.type === "editProfile" && (
               <EditProfile onClose={handleClosePopup} />
             )}

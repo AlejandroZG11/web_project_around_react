@@ -1,5 +1,3 @@
-import React from "react";
-
 const ImagePopup = ({ title, link, alt }) => {
   return (
     <div className="popup__image-container">
