@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Header from "./Header/Header.jsx";
 import Main from "./Main/Main.jsx";
 import Footer from "./Footer/Footer.jsx";
-import Popup from "./Main/components/Popup/Popup.jsx";
+import Popup from "./Main/Popup/Popup.jsx";
 import ImagePopup from "./Main/components/ImagePopup/ImagePopup.jsx";
 import NewCard from "./Main/components/NewCard/NewCard.jsx";
 import EditProfile from "./Main/components/EditProfile/EditProfile.jsx";
