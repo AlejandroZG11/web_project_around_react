@@ -3,9 +3,11 @@ import Header from "./Header/Header.jsx";
 import Main from "./Main/Main.jsx";
 import Footer from "./Footer/Footer.jsx";
 import Popup from "./Main/components/Popup/Popup.jsx";
+import ImagePopup from "./Main/components/ImagePopup/ImagePopup.jsx";
 import NewCard from "./Main/components/NewCard/NewCard.jsx";
 import EditProfile from "./Main/components/EditProfile/EditProfile.jsx";
 import EditAvatar from "./Main/components/EditAvatar/EditAvatar.jsx";
+import ConfirmDeletePopup from "./Main/components/ConfirmDeletePopup/ConfirmDeletePopup.jsx"; // Componente nuevo
 import CurrentUserContext from "../contexts/CurrentUserContext.js";
 import api from "../utils/api.js";
 
@@ -13,33 +15,40 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [popup, setPopup] = useState(null);
+  const [cardToDelete, setCardToDelete] = useState(null);
 
+  // Efecto para cargar datos iniciales del usuario y tarjetas
   useEffect(() => {
     (async () => {
       try {
-        const userData = await api.getUserInfo();
+        const [userData, initialCardsData] = await Promise.all([
+          api.getUserInfo(),
+          api.getCardList(),
+        ]);
         setCurrentUser(userData || {});
+        setCards(Array.isArray(initialCardsData) ? initialCardsData : []);
       } catch (error) {
-        console.error("Error al obtener información del usuario:", error);
-      }
-
-      try {
-        const initialCardsData = await api.getCardList();
-        if (Array.isArray(initialCardsData)) {
-          setCards(initialCardsData);
-        } else {
-          console.warn(
-            "La API no devolvió un array de tarjetas, se usará un array vacío. Recibido:",
-            initialCardsData
-          );
-          setCards([]);
-        }
-      } catch (error) {
-        console.error("Error al obtener la lista de tarjetas:", error);
-        setCards([]);
+        console.error("Error al obtener datos iniciales:", error);
       }
     })();
   }, []);
+
+  // Efecto para manejar el cierre de popups con la tecla 'Escape'
+  useEffect(() => {
+    const handleEscClose = (e) => {
+      if (e.key === "Escape") {
+        handleClosePopup();
+      }
+    };
+
+    if (popup) {
+      document.addEventListener("keydown", handleEscClose);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscClose);
+    };
+  }, [popup]);
 
   const handleUpdateUser = async (newUserInfo) => {
     try {
@@ -48,7 +57,7 @@ function App() {
         newUserInfo.about
       );
       setCurrentUser(updatedUser);
-      setPopup(null);
+      handleClosePopup();
     } catch (error) {
       console.error("Error al actualizar el perfil:", error);
     }
@@ -58,7 +67,7 @@ function App() {
     try {
       const updatedUser = await api.editAvatar(newAvatarData);
       setCurrentUser(updatedUser);
-      setPopup(null);
+      handleClosePopup();
     } catch (error) {
       console.error("Error al actualizar el avatar:", error);
     }
@@ -68,52 +77,76 @@ function App() {
     try {
       const newCard = await api.addCard(newCardData);
       setCards([newCard, ...cards]);
-      setPopup(null);
+      handleClosePopup();
     } catch (error) {
       console.error("Error al agregar una nueva tarjeta:", error);
     }
   };
-
+  // En App.jsx, dentro de la función handleCardLike
   const handleCardLike = async (card) => {
     try {
-      // Aseguramos que card.likes sea siempre un array
-      const likesArray = card.likes || [];
-      console.log("handleCardLike - likesArray:", likesArray);
+      // AQUI ES EL CAMBIO CLAVE:
+      // Ahora usamos directamente 'card.isLiked' para determinar si la tarjeta
+      // ya tiene 'Me gusta' por el usuario actual, ya que el servidor nos envía esta propiedad.
+      const isCurrentlyLikedByMe = card.isLiked;
 
-      const isLikedByCurrentUser = currentUser?._id
-        ? likesArray.some((like) => like._id === currentUser._id)
-        : false;
-
+      // La llamada a la API ahora se basa en el estado 'isLiked' proporcionado por el servidor.
+      // Si isCurrentlyLikedByMe es true, queremos DISLIKE (DELETE).
+      // Si isCurrentlyLikedByMe es false, queremos LIKE (PUT).
       const updatedCard = await api.changeLikeCardStatus(
         card._id,
-        !isLikedByCurrentUser
+        !isCurrentlyLikedByMe
       );
 
       setCards((prevCards) =>
-        prevCards.map((currentCard) => {
-          const newCard =
-            currentCard._id === card._id ? updatedCard : currentCard;
-          return newCard;
-        })
+        prevCards.map((c) => (c._id === updatedCard._id ? updatedCard : c))
       );
     } catch (error) {
       console.error("Error al dar/quitar like:", error);
     }
   };
+  // const handleCardLike = async (card) => {
+  //   try {
+  //     const likesArray = card.likes || [];
+  //     const isLiked = likesArray.some((like) => like._id === currentUser._id);
+  //     const updatedCard = await api.changeLikeCardStatus(card._id, !isLiked);
 
-  const handleCardDelete = async (card) => {
+  //     console.log("▶️ Card recibida de la API (updatedCard):", updatedCard);
+  //     console.log("▶️ Array de likes en updatedCard:", updatedCard.likes);
+  //     console.log(
+  //       "▶️ ID del usuario actual (currentUser._id):",
+  //       currentUser?._id
+  //     );
+
+  //     setCards((prevCards) =>
+  //       prevCards.map((c) => (c._id === card._id ? updatedCard : c))
+  //     );
+  //   } catch (error) {
+  //     console.error("Error al dar/quitar like:", error);
+  //   }
+  // };
+
+  const handleCardDeleteRequest = (card) => {
+    setCardToDelete(card);
+    handleOpenPopup({ type: "confirmDelete" });
+  };
+
+  const handleConfirmCardDelete = async () => {
+    if (!cardToDelete) return;
     try {
-      await api.deleteCard(card._id);
+      await api.deleteCard(cardToDelete._id);
       setCards((state) =>
-        state.filter((currentCard) => currentCard._id !== card._id)
+        state.filter((currentCard) => currentCard._id !== cardToDelete._id)
       );
+      handleClosePopup();
     } catch (error) {
       console.error("Error al eliminar la tarjeta:", error);
+    } finally {
+      setCardToDelete(null);
     }
   };
 
   const handleOpenPopup = (content) => {
-    console.log("Abriendo popup con:", content);
     setPopup(content);
   };
 
@@ -128,7 +161,7 @@ function App() {
           currentUser,
           handleUpdateUser,
           handleUpdateAvatar,
-          handleAddPlaceSubmit, // ¡Asegúrate de que esto está aquí!
+          handleAddPlaceSubmit,
         }}
       >
         <Header />
@@ -136,16 +169,17 @@ function App() {
           onOpenPopup={handleOpenPopup}
           cards={cards}
           onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
+          onCardDelete={handleCardDeleteRequest}
           onCardClick={(cardData) =>
             handleOpenPopup({
+              type: "image",
               title: cardData.name,
               link: cardData.link,
-              isImagePopup: true,
             })
           }
         />
         <Footer />
+
         {popup && (
           <Popup title={popup.title} onClose={handleClosePopup}>
             {popup.type === "editProfile" && (
@@ -157,7 +191,19 @@ function App() {
             {popup.type === "addPlace" && (
               <NewCard onClose={handleClosePopup} />
             )}
-            {popup.isImagePopup && <img src={popup.link} alt={popup.title} />}
+            {popup.type === "image" && (
+              <ImagePopup
+                title={popup.title}
+                link={popup.link}
+                alt={popup.title}
+              />
+            )}
+            {popup.type === "confirmDelete" && (
+              <ConfirmDeletePopup
+                onConfirm={handleConfirmCardDelete}
+                onClose={handleClosePopup}
+              />
+            )}
           </Popup>
         )}
       </CurrentUserContext.Provider>

@@ -6,11 +6,9 @@ import CurrentUserContext from "../../contexts/CurrentUserContext";
 
 const Main = (props) => {
   const { onOpenPopup, cards, onCardLike, onCardDelete, onCardClick } = props;
-
   const { currentUser } = useContext(CurrentUserContext);
 
   const handleEditAvatarClick = () => {
-    console.log("Haciendo clic en editar avatar");
     onOpenPopup({ type: "editAvatar" });
   };
 
@@ -40,47 +38,35 @@ const Main = (props) => {
         </div>
         <div className="profile__contents">
           <div className="profile__info">
-            <h1 className="profile__info-name" id="profile-name">
-              {currentUser?.name}
-            </h1>
-            <p className="profile__info-description" id="profile-description">
-              {currentUser?.about}
-            </p>
+            <h1 className="profile__info-name">{currentUser?.name}</h1>
+            <p className="profile__info-description">{currentUser?.about}</p>
           </div>
           <button
             type="button"
             className="profile__edit-button"
             onClick={handleEditProfileClick}
+            aria-label="Editar perfil"
           ></button>
           <button
             type="button"
             className="profile__add-button"
-            id="profile__add-button"
             onClick={handleAddPlaceClick}
+            aria-label="Añadir lugar"
           ></button>
         </div>
       </section>
       <section className="cards page__section">
         <ul className="cards__list">
           {Array.isArray(cards) &&
-            cards.map((card) => {
-              const isLiked =
-                currentUser?._id &&
-                card.likes &&
-                Array.isArray(card.likes) &&
-                card.likes.some((like) => like._id === currentUser._id);
-              return (
-                <Card
-                  key={card._id}
-                  card={card}
-                  onCardClick={onCardClick}
-                  onCardLike={onCardLike}
-                  onCardDelete={onCardDelete}
-                  isLiked={isLiked} // Corregido: pasar el valor booleano directamente
-                  currentUser={currentUser}
-                />
-              );
-            })}
+            cards.map((card) => (
+              <Card
+                key={card._id}
+                card={card}
+                onCardClick={onCardClick}
+                onCardLike={onCardLike}
+                onCardDelete={onCardDelete}
+              />
+            ))}
         </ul>
       </section>
     </main>

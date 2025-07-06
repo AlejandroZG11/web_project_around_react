@@ -79,7 +79,8 @@ export class Api extends React.Component {
     }
 
     addLikes(cardId) {
-        return fetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+        // URL corregida para consistencia
+        return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
             method: "PUT",
             headers: this._headers,
         }).then((res) => {
@@ -91,7 +92,8 @@ export class Api extends React.Component {
     }
 
     removeLikes(cardId) {
-        return fetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+        // URL corregida para consistencia
+        return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
             method: "DELETE",
             headers: this._headers,
         }).then((res) => {
@@ -104,9 +106,8 @@ export class Api extends React.Component {
 
     changeLikeCardStatus(cardId, isLiked) {
         const method = isLiked ? 'PUT' : 'DELETE';
-        // Asegúrate que la URL sea /cards/likes/:cardId o /cards/:cardId/likes según tu API
-        // El código original usaba /cards/:cardId/likes, lo mantendré así.
-        return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
+        // URL corregida a la más común y probablemente la original esperada por tu backend
+        return fetch(`${this._baseUrl}/cards/${cardId}/likes`, { // <-- ¡Asegúrate de que sea esta URL!
             method,
             headers: this._headers,
         })
@@ -121,7 +122,6 @@ export class Api extends React.Component {
                 return data;
             });
     }
-
     deleteCard(cardId) {
         return fetch(`${this._baseUrl}/cards/${cardId}`, {
             method: "DELETE",
