@@ -82,17 +82,11 @@ function App() {
       console.error("Error al agregar una nueva tarjeta:", error);
     }
   };
-  // En App.jsx, dentro de la función handleCardLike
+
   const handleCardLike = async (card) => {
     try {
-      // AQUI ES EL CAMBIO CLAVE:
-      // Ahora usamos directamente 'card.isLiked' para determinar si la tarjeta
-      // ya tiene 'Me gusta' por el usuario actual, ya que el servidor nos envía esta propiedad.
       const isCurrentlyLikedByMe = card.isLiked;
 
-      // La llamada a la API ahora se basa en el estado 'isLiked' proporcionado por el servidor.
-      // Si isCurrentlyLikedByMe es true, queremos DISLIKE (DELETE).
-      // Si isCurrentlyLikedByMe es false, queremos LIKE (PUT).
       const updatedCard = await api.changeLikeCardStatus(
         card._id,
         !isCurrentlyLikedByMe
@@ -105,26 +99,6 @@ function App() {
       console.error("Error al dar/quitar like:", error);
     }
   };
-  // const handleCardLike = async (card) => {
-  //   try {
-  //     const likesArray = card.likes || [];
-  //     const isLiked = likesArray.some((like) => like._id === currentUser._id);
-  //     const updatedCard = await api.changeLikeCardStatus(card._id, !isLiked);
-
-  //     console.log("▶️ Card recibida de la API (updatedCard):", updatedCard);
-  //     console.log("▶️ Array de likes en updatedCard:", updatedCard.likes);
-  //     console.log(
-  //       "▶️ ID del usuario actual (currentUser._id):",
-  //       currentUser?._id
-  //     );
-
-  //     setCards((prevCards) =>
-  //       prevCards.map((c) => (c._id === card._id ? updatedCard : c))
-  //     );
-  //   } catch (error) {
-  //     console.error("Error al dar/quitar like:", error);
-  //   }
-  // };
 
   const handleCardDeleteRequest = (card) => {
     setCardToDelete(card);

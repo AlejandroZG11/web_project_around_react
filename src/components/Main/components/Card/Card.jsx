@@ -10,11 +10,6 @@ const Card = ({ card, onCardClick, onCardLike, onCardDelete }) => {
 
   // Verifica si el usuario actual le ha dado "like" a la tarjeta
   const isLiked = card.isLiked;
-  console.log("🔵 Card prop recibida en Card.jsx:", card);
-  console.log("🔵 Array de likes en Card.jsx:", likes);
-  console.log("🔵 isLiked calculado en Card.jsx:", isLiked);
-  console.log("🔵 Longitud de likes en Card.jsx:", likes?.length || 0);
-  console.log("🔵 ID de usuario actual en Card.jsx:", currentUser?._id);
 
   const cardLikeButtonClassName = `element__heart-button ${
     isLiked ? "element__heart-button_active" : ""
@@ -31,11 +26,7 @@ const Card = ({ card, onCardClick, onCardLike, onCardDelete }) => {
   const handleCardClick = () => {
     onCardClick(card);
   };
-  // console.log("DATOS DE LA TARJETA:", {
-  //   nombreTarjeta: name,
-  //   idDueñoTarjeta: owner?._id,
-  //   idUsuarioActual: currentUser?._id,
-  // });
+
   return (
     <li className="element">
       <button
