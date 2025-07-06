@@ -4,8 +4,25 @@ import Card from "./components/Card/Card.jsx";
 import { useContext } from "react";
 import CurrentUserContext from "../../contexts/CurrentUserContext";
 
+import Popup from "./components/Popup/Popup.jsx";
+import ImagePopup from "./components/ImagePopup/ImagePopup.jsx";
+import NewCard from "./components/NewCard/NewCard.jsx";
+import EditProfile from "./components/EditProfile/EditProfile.jsx";
+import EditAvatar from "./components/EditAvatar/EditAvatar.jsx";
+import ConfirmDeletePopup from "./components/ConfirmDeletePopup/ConfirmDeletePopup.jsx";
+
 const Main = (props) => {
-  const { onOpenPopup, cards, onCardLike, onCardDelete, onCardClick } = props;
+  const {
+    onOpenPopup,
+    cards,
+    onCardLike,
+    onCardDelete,
+    onCardClick,
+    popup,
+    onClosePopup,
+    onConfirmDelete,
+    cardToDelete,
+  } = props;
   const { currentUser } = useContext(CurrentUserContext);
 
   const handleEditAvatarClick = () => {
@@ -69,6 +86,30 @@ const Main = (props) => {
             ))}
         </ul>
       </section>
+
+      {popup && (
+        <Popup title={popup.title} onClose={onClosePopup}>
+          {popup.type === "editProfile" && (
+            <EditProfile onClose={onClosePopup} />
+          )}
+          {popup.type === "editAvatar" && <EditAvatar onClose={onClosePopup} />}
+          {popup.type === "addPlace" && <NewCard onClose={onClosePopup} />}
+          {popup.type === "image" && (
+            <ImagePopup
+              title={popup.title}
+              link={popup.link}
+              alt={popup.title}
+            />
+          )}
+          {popup.type === "confirmDelete" && (
+            <ConfirmDeletePopup
+              onConfirm={onConfirmDelete}
+              onClose={onClosePopup}
+              cardToDelete={cardToDelete}
+            />
+          )}
+        </Popup>
+      )}
     </main>
   );
 };

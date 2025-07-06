@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import Header from "./Header/Header.jsx";
 import Main from "./Main/Main.jsx";
 import Footer from "./Footer/Footer.jsx";
-import Popup from "./Main/Popup/Popup.jsx";
-import ImagePopup from "./Main/components/ImagePopup/ImagePopup.jsx";
-import NewCard from "./Main/components/NewCard/NewCard.jsx";
-import EditProfile from "./Main/components/EditProfile/EditProfile.jsx";
-import EditAvatar from "./Main/components/EditAvatar/EditAvatar.jsx";
-import ConfirmDeletePopup from "./Main/components/ConfirmDeletePopup/ConfirmDeletePopup.jsx"; // Componente nuevo
 import CurrentUserContext from "../contexts/CurrentUserContext.js";
 import api from "../utils/api.js";
 
@@ -17,7 +11,6 @@ function App() {
   const [popup, setPopup] = useState(null);
   const [cardToDelete, setCardToDelete] = useState(null);
 
-  // Efecto para cargar datos iniciales del usuario y tarjetas
   useEffect(() => {
     (async () => {
       try {
@@ -33,39 +26,83 @@ function App() {
     })();
   }, []);
 
-  // Efecto para manejar el cierre de popups con la tecla 'Escape'
   useEffect(() => {
-    const handleEscClose = (e) => {
-      if (e.key === "Escape") {
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape") {
         handleClosePopup();
       }
     };
 
     if (popup) {
-      document.addEventListener("keydown", handleEscClose);
+      document.addEventListener("keydown", handleEscapeKey);
+    } else {
+      document.removeEventListener("keydown", handleEscapeKey);
     }
 
     return () => {
-      document.removeEventListener("keydown", handleEscClose);
+      document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [popup]);
 
-  const handleUpdateUser = async (newUserInfo) => {
+  // --- CORRECCIÓN AQUÍ: FUNCIÓN handleCardLike ---
+  const handleCardLike = async (card) => {
+    // Usamos 'card.isLiked' directamente, ya que el servidor nos envía esta propiedad.
+    // Esto determina si la tarjeta actualmente tiene 'Me gusta' por el usuario actual.
+    const isCurrentlyLikedByMe = card.isLiked;
+
     try {
-      const updatedUser = await api.editUserInfo(
-        newUserInfo.name,
-        newUserInfo.about
+      // Pasamos el valor negado de 'isCurrentlyLikedByMe' a la API.
+      // Si es true (ya tiene 'Me gusta'), !isCurrentlyLikedByMe será false, y la API hará DELETE.
+      // Si es false (no tiene 'Me gusta'), !isCurrentlyLikedByMe será true, y la API hará PUT.
+      const newCard = await api.changeLikeCardStatus(
+        card._id,
+        !isCurrentlyLikedByMe
       );
-      setCurrentUser(updatedUser);
+
+      setCards((state) => state.map((c) => (c._id === card._id ? newCard : c)));
+    } catch (error) {
+      console.error("Error al dar/quitar like:", error);
+    }
+  };
+  // --- FIN DE LA CORRECCIÓN ---
+
+  const handleCardDeleteRequest = (card) => {
+    setCardToDelete(card);
+    setPopup({ type: "confirmDelete" });
+  };
+
+  const handleConfirmCardDelete = async () => {
+    try {
+      await api.deleteCard(cardToDelete._id);
+      setCards((state) => state.filter((c) => c._id !== cardToDelete._id));
       handleClosePopup();
     } catch (error) {
-      console.error("Error al actualizar el perfil:", error);
+      console.error("Error al eliminar la tarjeta:", error);
     }
   };
 
-  const handleUpdateAvatar = async (newAvatarData) => {
+  const handleOpenPopup = (popupData) => {
+    setPopup(popupData);
+  };
+
+  const handleClosePopup = () => {
+    setPopup(null);
+    setCardToDelete(null);
+  };
+
+  const handleUpdateUser = async (userData) => {
     try {
-      const updatedUser = await api.editAvatar(newAvatarData);
+      const updatedUser = await api.editUserInfo(userData.name, userData.about);
+      setCurrentUser(updatedUser);
+      handleClosePopup();
+    } catch (error) {
+      console.error("Error al actualizar la información del usuario:", error);
+    }
+  };
+
+  const handleUpdateAvatar = async (avatarData) => {
+    try {
+      const updatedUser = await api.editUserAvatar(avatarData.avatar);
       setCurrentUser(updatedUser);
       handleClosePopup();
     } catch (error) {
@@ -73,59 +110,14 @@ function App() {
     }
   };
 
-  const handleAddPlaceSubmit = async (newCardData) => {
+  const handleAddPlaceSubmit = async (placeData) => {
     try {
-      const newCard = await api.addCard(newCardData);
+      const newCard = await api.addPlace(placeData);
       setCards([newCard, ...cards]);
       handleClosePopup();
     } catch (error) {
-      console.error("Error al agregar una nueva tarjeta:", error);
+      console.error("Error al agregar nueva tarjeta:", error);
     }
-  };
-
-  const handleCardLike = async (card) => {
-    try {
-      const isCurrentlyLikedByMe = card.isLiked;
-
-      const updatedCard = await api.changeLikeCardStatus(
-        card._id,
-        !isCurrentlyLikedByMe
-      );
-
-      setCards((prevCards) =>
-        prevCards.map((c) => (c._id === updatedCard._id ? updatedCard : c))
-      );
-    } catch (error) {
-      console.error("Error al dar/quitar like:", error);
-    }
-  };
-
-  const handleCardDeleteRequest = (card) => {
-    setCardToDelete(card);
-    handleOpenPopup({ type: "confirmDelete" });
-  };
-
-  const handleConfirmCardDelete = async () => {
-    if (!cardToDelete) return;
-    try {
-      await api.deleteCard(cardToDelete._id);
-      setCards((state) =>
-        state.filter((currentCard) => currentCard._id !== cardToDelete._id)
-      );
-      handleClosePopup();
-    } catch (error) {
-      console.error("Error al eliminar la tarjeta:", error);
-    } finally {
-      setCardToDelete(null);
-    }
-  };
-
-  const handleOpenPopup = (content) => {
-    setPopup(content);
-  };
-
-  const handleClosePopup = () => {
-    setPopup(null);
   };
 
   return (
@@ -151,35 +143,12 @@ function App() {
               link: cardData.link,
             })
           }
+          popup={popup}
+          onClosePopup={handleClosePopup}
+          onConfirmDelete={handleConfirmCardDelete}
+          cardToDelete={cardToDelete}
         />
         <Footer />
-
-        {popup && (
-          <Popup title={popup.title} onClose={handleClosePopup}>
-            {popup.type === "editProfile" && (
-              <EditProfile onClose={handleClosePopup} />
-            )}
-            {popup.type === "editAvatar" && (
-              <EditAvatar onClose={handleClosePopup} />
-            )}
-            {popup.type === "addPlace" && (
-              <NewCard onClose={handleClosePopup} />
-            )}
-            {popup.type === "image" && (
-              <ImagePopup
-                title={popup.title}
-                link={popup.link}
-                alt={popup.title}
-              />
-            )}
-            {popup.type === "confirmDelete" && (
-              <ConfirmDeletePopup
-                onConfirm={handleConfirmCardDelete}
-                onClose={handleClosePopup}
-              />
-            )}
-          </Popup>
-        )}
       </CurrentUserContext.Provider>
     </div>
   );
